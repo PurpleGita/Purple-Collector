@@ -176,7 +176,7 @@ public class BattleManager : MonoBehaviour
             Debug.Log("LeftPressed");
             if (selectingCard == true && cardsInHand.Count > 0)
             {
-                if (highlightedCard == 0) { 
+                if (highlightedCard <= 0) { 
                     Debug.Log("viewSomething");
                     DeselectAllCards();
                     viewDeckHandler.Selected();

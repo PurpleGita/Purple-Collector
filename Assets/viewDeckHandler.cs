@@ -34,6 +34,7 @@ public class viewDeckHandler : MonoBehaviour
         {
             Debug.Log("Viewing Deck");
             Obj_slectedEffekt.SetActive(false);
+            Obj_viewDeck.SetActive(true);
         }
 
 
