@@ -1,0 +1,24 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c170a4c063afdba4d93097c8edbcefea, type: 3}
+  m_Name: Defend
+  m_EditorClassIdentifier: 
+  cardName: Defend
+  manaCost: 2
+  description: " F\xE5 70%DEF Block og 15 energy. Sword Stance: G\xF8r 100%MAG lyn
+    skade i stedet"
+  chr: {fileID: 11400000, guid: b03380cfb02604f4da0d3781229cf414, type: 2}
+  image: {fileID: 0}
+  signiture: 0
+  exile: 0
+  effects:
+  - {fileID: 11400000, guid: 0383c7c558840464d94540371cae4e0f, type: 2}
