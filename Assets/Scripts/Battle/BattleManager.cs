@@ -50,16 +50,16 @@ public class BattleManager : MonoBehaviour
     public List<ChrRuntime> modifiedChrs = new();
 
     [SerializeField]
-    List<CardRuntime> cardsInHand;
+    public List<CardRuntime> cardsInHand;
 
     [SerializeField]
-    List<CardRuntime> cardsInDeck;
+    public List<CardRuntime> cardsInDeck;
 
     [SerializeField]
-    List<CardRuntime> cardsInDiscard;
+    public List<CardRuntime> cardsInDiscard;
 
     [SerializeField]
-    List<CardRuntime> cardsInExile;
+    public List<CardRuntime> cardsInExile;
 
     [SerializeField]
     InputHandler inputHander;
@@ -67,16 +67,13 @@ public class BattleManager : MonoBehaviour
     [SerializeField]
     viewDeckHandler viewDeckHandler;
 
+    [SerializeField]
+    HpHandler hpHandler;
+
     //[SerializeField]
     //List<Enemy> enemiesInBattle;
 
     int maxMana;
-
-    int HP;
-
-    int maxHP;
-
-    int currentBlock;
 
     int absoluteMaxHandSize = 15;
 
@@ -100,18 +97,19 @@ public class BattleManager : MonoBehaviour
 
     bool viewUlts = false;
 
+    public bool menuOpen = false;
+
+
+
     void Start()
     {
         //temp things that will be loaded from elsewhere later:
-        maxHP = 100;
-        HP = maxHP;
         List<int> maxEnergyTemp = new List<int>();
-
 
         manaHandler = Obj_Mana.GetComponent<ManaHandler>();
         handSizeHandler = Obj_HandSize.GetComponent<HandSizeHandler>();
         energyHandler = Obj_Energy.GetComponent<EnergyHandler>();
-        
+
 
         StartBattle();
     }
@@ -120,120 +118,124 @@ public class BattleManager : MonoBehaviour
     void Update()
     {
         if (Input.GetKeyDown("b")) { DrawCard(1); }
-        
 
-            if (inputHander.CheckDownPressed()) 
-        {
-            Debug.Log("DownPressed");
-
-            //select card if currently not doing anything
-            if(viewBuffs == false && viewUlts == false && selectingCard == false) 
+        if (!menuOpen) { 
+                if (inputHander.CheckDownPressed()) 
             {
-                Debug.Log("selecting Card");
-                selectingCard = true;
-                highlightedCard = 0;
-                Obj_CardsinHand.transform.GetChild(0).GetComponent<CardUI>().SelectCard();
+                Debug.Log("DownPressed");
+
+                //select card if currently not doing anything
+                if(viewBuffs == false && viewUlts == false && selectingCard == false) 
+                {
+                    Debug.Log("selecting Card");
+                    selectingCard = true;
+                    highlightedCard = 0;
+                    Obj_CardsinHand.transform.GetChild(0).GetComponent<CardUI>().SelectCard();
+                }
+
+                //Select the first card in hand if currently viewing buffs
+                if (selectingCard == false && cardsInHand.Count > 0 && viewBuffs == true)
+                {
+                    Debug.Log("selecting Card");
+                    selectingCard = true;
+                    highlightedCard = 0;
+                    Obj_CardsinHand.transform.GetChild(0).GetComponent<CardUI>().SelectCard();
+                    viewBuffs = false;
+
+                }
+
+                //view buffs if currently viewing ults
+                if (viewUlts)
+                {
+                    Debug.Log("viewing buffs");
+                    viewBuffs = true;
+                    viewUlts = false;
+                    energyHandler.DeSelectUlt();
+                }
+
+            }
+            if (inputHander.CheckRightPressed())
+            {
+                Debug.Log("RightPressed");
+                if (selectingCard == true && cardsInHand.Count > 0)
+                {
+                        highlightedCard = Mathf.Min(highlightedCard + 1, cardsInHand.Count - 1);
+                        UpdateHandLayout();
+                        DeselectAllCards();
+                        Obj_CardsinHand.transform.GetChild(highlightedCard).GetComponent<CardUI>().SelectCard();
+                        viewDeckHandler.Deselect();
+
+
+                }
             }
 
-            //Select the first card in hand if currently viewing buffs
-            if (selectingCard == false && cardsInHand.Count > 0 && viewBuffs == true)
+            if (inputHander.CheckLeftPressed())
             {
-                Debug.Log("selecting Card");
-                selectingCard = true;
-                highlightedCard = 0;
-                Obj_CardsinHand.transform.GetChild(0).GetComponent<CardUI>().SelectCard();
-                viewBuffs = false;
+                Debug.Log("LeftPressed");
+                if (selectingCard == true && cardsInHand.Count > 0)
+                {
+                    if (highlightedCard <= 0) { 
+                        Debug.Log("viewSomething");
+                        DeselectAllCards();
+                        viewDeckHandler.Selected();
+                        UpdateHandLayout();
+                        highlightedCard = -1;
+                    }
+                    else
+                    {
+                        highlightedCard = Mathf.Max(highlightedCard - 1, 0);
+                        UpdateHandLayout();
+                        DeselectAllCards();
+                        Obj_CardsinHand.transform.GetChild(highlightedCard).GetComponent<CardUI>().SelectCard();
+                    }
 
+
+
+                }
             }
 
-            //view buffs if currently viewing ults
-            if (viewUlts)
+            if (inputHander.CheckUpPressed())
             {
-                Debug.Log("viewing buffs");
-                viewBuffs = true;
-                viewUlts = false;
-                energyHandler.DeSelectUlt();
-            }
 
-        }
-        if (inputHander.CheckRightPressed())
-        {
-            Debug.Log("RightPressed");
-            if (selectingCard == true && cardsInHand.Count > 0)
-            {
-                    highlightedCard = Mathf.Min(highlightedCard + 1, cardsInHand.Count - 1);
-                    UpdateHandLayout();
+
+                Debug.Log("UpPressed");
+                if (viewBuffs) 
+                {
+                    Debug.Log("viewing Ult");
+                    viewBuffs = false;
+                    viewUlts = true;
+                    energyHandler.ViewUlts(this);
+                }
+            
+                if (selectingCard)
+                {
+                    Debug.Log("viewing buffs");
                     DeselectAllCards();
-                    Obj_CardsinHand.transform.GetChild(highlightedCard).GetComponent<CardUI>().SelectCard();
+                    selectingCard = false;
+                    UpdateHandLayout();
+                    viewBuffs = true;
                     viewDeckHandler.Deselect();
 
-
-            }
-        }
-
-        if (inputHander.CheckLeftPressed())
-        {
-            Debug.Log("LeftPressed");
-            if (selectingCard == true && cardsInHand.Count > 0)
-            {
-                if (highlightedCard <= 0) { 
-                    Debug.Log("viewSomething");
-                    DeselectAllCards();
-                    viewDeckHandler.Selected();
-                    UpdateHandLayout();
-                    highlightedCard = -1;
                 }
-                else
+            }
+
+            if (inputHander.CheckAPressed()) 
+            {
+                Debug.Log("AButtonPressed");
+                if (selectingCard && highlightedCard >= 0)
                 {
-                    highlightedCard = Mathf.Max(highlightedCard - 1, 0);
-                    UpdateHandLayout();
-                    DeselectAllCards();
-                    Obj_CardsinHand.transform.GetChild(highlightedCard).GetComponent<CardUI>().SelectCard();
+                    CardUI cardUI = Obj_CardsinHand.transform.GetChild(highlightedCard).GetComponent<CardUI>();
+                    PlayCardFromHand(cardUI);
                 }
-
-
+                else if (selectingCard && highlightedCard == -1) { viewDeckHandler.ViewDeck(); } 
+            
+                if(viewUlts) { energyHandler.AttemptToUseUlt(modifiedChrs,this); }
 
             }
         }
-
-        if (inputHander.CheckUpPressed())
-        {
-
-
-            Debug.Log("UpPressed");
-            if (viewBuffs) 
-            {
-                Debug.Log("viewing Ult");
-                viewBuffs = false;
-                viewUlts = true;
-                energyHandler.ViewUlts(this);
-            }
-            
-            if (selectingCard)
-            {
-                Debug.Log("viewing buffs");
-                DeselectAllCards();
-                selectingCard = false;
-                UpdateHandLayout();
-                viewBuffs = true;
-                viewDeckHandler.Deselect();
-
-            }
-        }
-
-        if (inputHander.CheckAPressed()) 
-        {
-            Debug.Log("AButtonPressed");
-            if (selectingCard && highlightedCard >= 0)
-            {
-                CardUI cardUI = Obj_CardsinHand.transform.GetChild(highlightedCard).GetComponent<CardUI>();
-                PlayCardFromHand(cardUI);
-            }
-            else if (selectingCard && highlightedCard == -1) { viewDeckHandler.ViewDeck(); } 
-            
-            if(viewUlts) { energyHandler.AttemptToUseUlt(modifiedChrs,this); }
-
-
+        else 
+        { 
+        
         }
 
     }
@@ -254,7 +256,7 @@ public class BattleManager : MonoBehaviour
 
 
 
-        
+
         foreach (ChrRuntime chr in modifiedChrs)
         {
             foreach (CardRuntime card in chr.startingDeck)
@@ -291,6 +293,7 @@ public class BattleManager : MonoBehaviour
         handSizeHandler.UpdateCardsInHandCount(cardsInHand.Count);
         energyHandler.SetUltImage(modifiedChrs[0].ultImage,0);
         energyHandler.SetMaxEnergyFirstTime(modifiedChrs);
+        hpHandler.SetupMaxHP(modifiedChrs);
 
     }
 
@@ -310,8 +313,7 @@ public class BattleManager : MonoBehaviour
     //Called from cards
     public void Gainblock(int amount)
     {
-        Debug.Log("Gained " + amount + " blcok");
-        currentBlock += amount;
+        hpHandler.GainBlock(amount);
     }
 
     public void DrawCard(int amount)

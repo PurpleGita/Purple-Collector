@@ -9,5 +9,5 @@ public enum Elements
 
 public enum Stat
 {
-    ATK, MAG, DEF
+    ATK, MAG, DEF , HP
 }

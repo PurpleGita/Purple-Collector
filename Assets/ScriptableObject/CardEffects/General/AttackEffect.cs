@@ -24,16 +24,25 @@ public class AttackEffect : CardEffect
                 damagedRounded = (int)Math.Round(damageAmount);
                 battleManager.DealDamageToEnemies(damagedRounded, elementalDamage,target);
                 break;
+
             case Stat.MAG:
                 damageAmount = (user.MAG / 100) * damagePercentage;
                 damagedRounded = (int)Math.Round(damageAmount);
                 battleManager.DealDamageToEnemies(damagedRounded, elementalDamage, target);
                 break;
+
             case Stat.DEF:
                 damageAmount = (user.DEF / 100) * damagePercentage;
                 damagedRounded = (int)Math.Round(damageAmount);
                 battleManager.DealDamageToEnemies(damagedRounded, elementalDamage, target);
                 break;
+
+            case Stat.HP:
+                damageAmount = (user.HP / 100) * damagePercentage;
+                damagedRounded = (int)Math.Round(damageAmount);
+                battleManager.DealDamageToEnemies(damagedRounded, elementalDamage, target);
+                break;
+
             default:
                 damageAmount = (user.ATK / 100) * damagePercentage;
                 damagedRounded = (int)Math.Round(damageAmount);

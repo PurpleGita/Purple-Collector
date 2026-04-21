@@ -25,6 +25,7 @@ public class ChrRuntime
 
         characterName = baseData.characterName;
         currentHP = baseData.HP;
+        HP = baseData.HP;
         ATK = baseData.ATK;
         DEF = baseData.DEF;
         MAG = baseData.MAG;
