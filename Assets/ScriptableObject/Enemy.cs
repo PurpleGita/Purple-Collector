@@ -1,5 +1,6 @@
 using UnityEngine;
 
+
 [CreateAssetMenu(fileName = "Enemy", menuName = "Scriptable Objects/Enemy")]
 public class Enemy : ScriptableObject
 {
@@ -9,6 +10,7 @@ public class Enemy : ScriptableObject
     public bool alive;
     public float currentBlock;
     public int numberInRow;
+    public Sprite enemyImage;
     //List<EnemyAttakcs>
 
 

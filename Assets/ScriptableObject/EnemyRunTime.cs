@@ -1,4 +1,3 @@
-using UnityEditor.Overlays;
 using UnityEngine;
 
 public class EnemyRunTime
@@ -10,6 +9,7 @@ public class EnemyRunTime
     public bool alive;
     public float currentBlock;
     public int numberInRow;
+    public Sprite enemyImage;
     //List<EnemyAttakcsRuntime>
 
 
@@ -22,6 +22,7 @@ public class EnemyRunTime
         alive = data.alive;
         currentBlock = data.currentBlock;
         numberInRow = data.numberInRow;
+        enemyImage = data.enemyImage;
 
     }
     
