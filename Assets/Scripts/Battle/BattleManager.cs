@@ -93,6 +93,8 @@ public class BattleManager : MonoBehaviour
 
     List<Passive> activePassives = new();
 
+    public EnemyHandler enemyHandler;
+
     bool viewBuffs = false;
 
     bool viewUlts = false;
@@ -300,7 +302,11 @@ public class BattleManager : MonoBehaviour
     //Called from cards
     public void DealDamageToEnemies(int amount,Elements element,int target)
     {
+        //damage modification: like strength,
+
         Debug.Log("Dealt " + amount + " " + element.ToString() + " to target " + target);
+
+        enemyHandler.AttackedByPlayer(amount, element, target);
     }
 
     //Called from cards

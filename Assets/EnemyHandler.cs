@@ -37,9 +37,12 @@ public class EnemyHandler : MonoBehaviour
 
     public void UpdateEnemies() 
     {
+        int currentEnemyId = 0;
         foreach (EnemyRunTime enemy in modifiedEnemies)
         {
             SummonEnemy(enemy);
+            modifiedEnemies[currentEnemyId].numberInRow = currentEnemyId;
+            currentEnemyId++;
         }
     }
 
@@ -80,6 +83,74 @@ public class EnemyHandler : MonoBehaviour
             modifiedEnemies[postionOfEnemy].currentBlock = 0;
             OBJ_enemiesCanvas[postionOfEnemy].transform.GetChild(4).gameObject.SetActive(false);
         }
+    }
+
+    public void AttackedByPlayer(int amount, Elements element, int target) 
+    { 
+        if (target > currentEnemies) { target = currentEnemies; }
+
+
+        //Calculate enemyResistance
+
+
+        //Calculate block
+        amount -= (int)modifiedEnemies[target].currentBlock;
+
+
+        //if amount is less then 0 set to 0
+        if(amount < 0) {amount = 0;}
+
+        LoseLife(amount, target);
+        CheckIfEnemyDead();
+
+
+
+    }
+
+     
+    public void LoseLife(int amount,int target) 
+    {
+        modifiedEnemies[target].currentHP -= amount;
+        Debug.Log("enemy number in row value that loses hp: " + modifiedEnemies[target].numberInRow + " and target value: " + target);
+        OBJ_enemiesCanvas[modifiedEnemies[target].numberInRow].GetComponent<Slider>().value = modifiedEnemies[target].currentHP;
+        OBJ_enemiesCanvas[modifiedEnemies[target].numberInRow].transform.GetChild(3).GetComponent<TextMeshProUGUI>().text = "" + modifiedEnemies[target].currentHP + "/" + modifiedEnemies[target].hp;
+    }
+
+    public void CheckIfEnemyDead() 
+    {
+        int i  = 0;
+        List<EnemyRunTime> toRemove = new List<EnemyRunTime>();
+        //checking
+        foreach (EnemyRunTime enemyToCheck in modifiedEnemies) 
+        {
+            
+            if (enemyToCheck.currentHP <= 0) 
+            {
+                //actually kill thing
+                OBJ_enmemies[i].SetActive(false);
+                OBJ_enemiesCanvas[i].SetActive(false);
+                toRemove.Add(enemyToCheck);
+                
+            }
+            i++;
+        }
+
+
+        foreach (EnemyRunTime enemyToRemove in toRemove)
+        {
+            modifiedEnemies.Remove(enemyToRemove);
+            Debug.Log("enemies left in scene: " + modifiedEnemies.Count);
+        }
+
+
+        //trigger all on death effects
+
+
+        //check if all enemies are dead
+
+
+
+
     }
 
 
